@@ -1,18 +1,25 @@
 const express = require('express');
-const { sequelize, testConnection } = require('./database');
+require('dotenv').config();
+const { sequelize } = require('./config/database');
+const productRoutes = require('./routes/productRoutes');
 
 const app = express();
+
 app.use(express.json());
 
-// Probar conexión a la BD
-testConnection();
-
-// Sincronizar modelos (opcional, crea tablas si no existen)
-sequelize.sync({ force: false })
-  .then(() => console.log('Base de datos sincronizada.'))
-  .catch((err) => console.error('Error al sincronizar:', err));
+// Rutas de la API
+app.use('/api/productos', productRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+
+// Sincronizar base de datos e iniciar servidor
+sequelize.sync({ alter: true })
+  .then(() => {
+    console.log(' Conexión y sincronización con SQL Server exitosa.');
+    app.listen(PORT, () => {
+      console.log(` Servidor API REST corriendo en el puerto ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(' Error al sincronizar con la base de datos:', err);
+  });
