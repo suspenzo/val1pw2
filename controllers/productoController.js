@@ -1,11 +1,12 @@
-const Product = require('../models/Product');
+const Producto = require('../models/Producto');
 const { Op } = require('sequelize');
+
 
 // 1. Obtener todos los productos
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
-    res.status(200).json(products);
+    const productos = await Producto.findAll();
+    res.status(200).json(productos);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener productos', error: error.message });
   }
@@ -15,20 +16,20 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByPk(id);
+    const producto = await Producto.findByPk(id);
 
-    if (!product) {
+    if (!producto) {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    res.status(200).json(product);
+    res.status(200).json(producto);
   } catch (error) {
     res.status(500).json({ message: 'Error al buscar el producto', error: error.message });
   }
 };
 
 // 3. Buscar productos por nombre (query param: /api/productos/search?nombre=laptop)
-exports.searchProducts = async (req, res) => {
+exports.searchproductos = async (req, res) => {
   try {
     const { nombre } = req.query;
 
@@ -36,7 +37,7 @@ exports.searchProducts = async (req, res) => {
       return res.status(400).json({ message: 'Debe ingresar un término de búsqueda' });
     }
 
-    const products = await Product.findAll({
+    const productos = await Producto.findAll({
       where: {
         nombre: {
           [Op.like]: `%${nombre}%`
@@ -44,7 +45,7 @@ exports.searchProducts = async (req, res) => {
       }
     });
 
-    res.status(200).json(products);
+    res.status(200).json(productos);
   } catch (error) {
     res.status(500).json({ message: 'Error en la búsqueda', error: error.message });
   }
@@ -59,11 +60,12 @@ exports.createProduct = async (req, res) => {
       return res.status(400).json({ message: 'El nombre y precio son obligatorios' });
     }
 
-    const newProduct = await Product.create({
+    const newProduct = await Producto.create({
       nombre,
       descripcion,
       precio,
-      stock
+      stock, 
+      estado: true 
     });
 
     res.status(201).json({ message: 'Producto creado exitosamente', data: newProduct });
@@ -76,22 +78,23 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, descripcion, precio, stock } = req.body;
+    const { nombre, descripcion, precio, stock, estado } = req.body;
 
-    const product = await Product.findByPk(id);
+    const producto = await Producto.findByPk(id);
 
-    if (!product) {
+    if (!producto) {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    await product.update({
-      nombre: nombre !== undefined ? nombre : product.nombre,
-      descripcion: descripcion !== undefined ? descripcion : product.descripcion,
-      precio: precio !== undefined ? precio : product.precio,
-      stock: stock !== undefined ? stock : product.stock
+    await producto.update({
+      nombre: nombre !== undefined ? nombre : producto.nombre,
+      descripcion: descripcion !== undefined ? descripcion : producto.descripcion,
+      precio: precio !== undefined ? precio : producto.precio,
+      stock: stock !== undefined ? stock : producto.stock,
+      estado: estado !== undefined ? estado : producto.estado
     });
 
-    res.status(200).json({ message: 'Producto actualizado exitosamente', data: product });
+    res.status(200).json({ message: 'Producto actualizado exitosamente', data: producto });
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar el producto', error: error.message });
   }
@@ -101,13 +104,13 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByPk(id);
+    const producto = await Producto.findByPk(id);
 
-    if (!product) {
+    if (!producto) {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    await product.destroy();
+    await producto.destroy();
 
     res.status(200).json({ message: 'Producto eliminado correctamente de SQL Server' });
   } catch (error) {

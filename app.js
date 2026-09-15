@@ -1,19 +1,25 @@
 const express = require('express');
 require('dotenv').config();
 const { sequelize } = require('./config/database');
-const productRoutes = require('./routes/productRoutes');
+const productoRoutes = require('./routes/productoRoutes');
 
 const app = express();
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    mensaje: '¡Bienvenido a la API REST de Gestión de Productos!'
+  });
+});
+
 // Rutas de la API
-app.use('/api/productos', productRoutes);
+app.use('/api/productos', productoRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 // Sincronizar base de datos e iniciar servidor
-sequelize.sync({ alter: true })
+sequelize.sync()
   .then(() => {
     console.log(' Conexión y sincronización con SQL Server exitosa.');
     app.listen(PORT, () => {

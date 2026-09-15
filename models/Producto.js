@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const Product = sequelize.define('Product', {
+const Producto = sequelize.define('Producto', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -19,7 +19,7 @@ const Product = sequelize.define('Product', {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
     validate: {
-      isGt: 0
+      min: 0.01
     }
   },
   stock: {
@@ -40,4 +40,4 @@ const Product = sequelize.define('Product', {
   timestamps: true        // Crea automáticamente createdAt y updatedAt
 });
 
-module.exports = Product;
+module.exports = Producto;
